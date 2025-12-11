@@ -35,7 +35,9 @@ const files = {
   "index": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/gui/index.html", path.join(__dirname, "gui", "index.html")],
   "style": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/gui/style.css", path.join(__dirname, "gui", "style.css")],
   "utils": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/gui/utils.js", path.join(__dirname, "lib", "utils.js")],
-  "server": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/server.properties", path.join(__dirname, "server.properties")]
+  "server": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/server.properties", path.join(__dirname, "server.properties")],
+    "plugins": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/lib/plugins.js", path.join(__dirname,"lib", "plugins.js")],
+      "pythonBridge": ["https://cdn.jsdelivr.net/gh/ThreeCraft/ThreeCraftServer/lib/pythonBridge.js", path.join(__dirname,"lib", "pythonBridge.js")]
 };
 
 
