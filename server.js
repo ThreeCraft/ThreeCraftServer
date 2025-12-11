@@ -2063,5 +2063,38 @@ async function handleFallingForPlayer(playerId) {
   }
 }
 
-// Run the main async function
+// Check if script args have setup
+if (process.argv.includes("--setup")) {
+   const eulaText = `
+      You are Prohibitted from using Offical Minecraft Game Resources like Textures and sounds
+      This is a project for personal intrest on making multiplayer games and learning about networking
+      Minecraft belongs to Mojang AB and Microsoft
+      And They have a right to DMCA You if you use their resources without permission.
+
+
+      If you use minecraft textures or resources in your own ThreeCraft Server. I take no responsibility on what happens to you.
+
+      Please Respect Microsoft and Mojang Intelectual Rights to Minecraft Resources
+      
+      You can use your own textures and sounds in ThreeCraft. or use other Texturepacks that are free to use.
+      This is a Minecraft Parody and is not affiliated with Mojang AB or Microsoft.
+      By changing the setting below to true you are agreeing to These rules
+      1. You will not use Offical Minecraft Resources
+      2. You will not host a public server using Offical Minecraft Resources
+      3. You understand that Mojang AB and Microsoft own Minecraft and its Resources
+      4. You agree to take down your server if Mojang AB, Microsoft request you to do so.
+      5. You agree that this is a Parody project and is not affiliated with Mojang AB or Microsoft in any way.
+      6. You agree to Remove resources if you use Other peoples Texturepacks that are not given permission to use. and they request you to do so.
+      7. You agree that ThreeCraft is a non profit project and is not making any money from this project.
+      8. You agree that if you break any of these rules Microsoft and Mojang AB have the right to DMCA you and your server.
+
+      # You must accept the EULA to run the ThreeCraft Integrated Server.
+      eula=false
+`;      fs.writeFileSync(eulaPath, eulaText, "utf8");
+      logMessage("EULA file created. Please read eula.txt and accept the EULA to run the server.","CRITICAL");
+      process.exit(1);
+}
+else {
+  // Run the main async function
 initializeAndStartServer();
+}
