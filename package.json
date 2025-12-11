@@ -1,0 +1,22 @@
+{
+  "name": "threecraftserver",
+  "version": "1.0.0",
+  "description": "Server for ThreeCraft",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "three.js",
+    "socket.io",
+    "game"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.5.4",
+    "cors": "^2.8.5"
+  }
+}

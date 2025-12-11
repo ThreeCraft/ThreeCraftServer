@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Server Dashboard</h1>
+      <p>Real-time server monitoring and management</p>
+    </div>
+
+    <div class="server-status" id="serverStatus">
+      <strong>Server Status:</strong> <span id="statusText" class="status-online">● Online</span> | 
+      <strong>Uptime:</strong> <span id="uptimeText" class="uptime-badge">0d 0h 0m</span>
+    </div>
+    <br>
+    <div class="grid">
+      <!-- Server Stats -->
+      <div class="card">
+        <h2>Server Statistics</h2>
+        <div class="stat-box">
+          <span class="stat-label">Online Players:</span>
+          <span class="stat-value" id="playerCount">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Total Chunks:</span>
+          <span class="stat-value" id="chunkCount">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Server Seed:</span>
+          <span class="stat-value" id="worldSeed">-</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Average FPS:</span>
+          <span class="stat-value" id="serverFps">60</span>
+        </div>
+        <button class="button">Restart Server</button>
+      </div>
+
+      <!-- System Resources -->
+      <div class="card">
+        <h2>System Resources</h2>
+        <div class="stat-box">
+          <span class="stat-label">Memory Usage:</span>
+          <span class="stat-value" id="memoryUsage">0 MB</span>
+        </div>
+        <div class="memory-bar">
+          <div class="memory-fill" id="memoryFill" style="width: 0%"></div>
+        </div>
+        <div class="stat-box" style="margin-top: 15px;">
+          <span class="stat-label">CPU Usage:</span>
+          <span class="stat-value" id="cpuUsage">0%</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Network:</span>
+          <span class="stat-value" id="networkUsage">0 KB/s</span>
+        </div>
+      </div>
+
+      <!-- Network Stats -->
+      <div class="card">
+        <h2>Network Statistics</h2>
+        <div class="stat-box">
+          <span class="stat-label">Incoming:</span>
+          <span class="stat-value" id="incomingData">0 B/s</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Outgoing:</span>
+          <span class="stat-value" id="outgoingData">0 B/s</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Avg Latency:</span>
+          <span class="stat-value" id="avgLatency">0 ms</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Packet Loss:</span>
+          <span class="stat-value" id="packetLoss">0%</span>
+        </div>
+      </div>
+
+      <!-- Performance Chart -->
+      <div class="card wide">
+        <h2> Server Performance and Console</h2>
+        <div class="chart-container">
+          <canvas id="performanceChart"></canvas>
+        </div>
+        <br>
+         <div class="console-container" id="consoleFeed">
+        </div>
+        
+      </div>
+
+      <!-- Active Players -->
+      <div class="card">
+        <h2>Active Players</h2>
+        <div class="players-list" id="playersList">
+          <p style="opacity: 0.6; text-align: center; padding: 20px;">No players online</p>
+        </div>
+      </div>
+
+      <!-- Level.dat Explorer -->
+      <div class="card">
+        <h2>Level.dat Explorer</h2>
+        <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+          <button id="refreshLevelBtn" class="button">Refresh</button>
+          <span style="opacity:0.8; font-size:12px;">Inspect `world/level.dat` contents</span>
+        </div>
+        <div class="level-explorer" id="levelExplorer" style="max-height:240px; overflow:auto; background:#111; color:#eee; padding:8px; border-radius:4px; font-family:monospace; font-size:12px;">
+          <pre id="levelJson" style="white-space:pre-wrap; word-break:break-word;">Loading...</pre>
+        </div>
+        <h3 style="margin-top:12px;">Saved Player Positions</h3>
+        <div id="levelPlayers" style="max-height:160px; overflow:auto; padding-top:6px;"></div>
+      </div>
+
+      <!-- Server Logs -->
+      <div class="card">
+        <h2>Recent Logs</h2>
+        <div class="logs-container" id="logsList">
+          
+        </div>
+      </div>
+
+      <!-- Anti-Cheat Alerts -->
+      <div class="card">
+        <h2>Anti-Cheat Alerts</h2>
+        <div class="alerts-container" id="alertsList">
+          <p style="opacity: 0.6; text-align: center; padding: 20px;">No alerts</p>
+        </div>
+      </div>
+      <!-- Chunk Data -->
+      <div class="card">
+        <h2>Chunk Data</h2>
+        <p id="totalChunkSize">Size of all chunk files go here</p>
+        <p id="totalChunksMade">Total chunks made go here</p>
+        <button class="button" id="clearChunksBtn">Clear All Chunks</button>
+
+      </div>
+
+      
+  </div>
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

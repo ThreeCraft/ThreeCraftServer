@@ -1,0 +1,234 @@
+/* Frosted Server Dashboard Upgrade — Next-Gen */
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700&display=swap");
+
+:root {
+  --frost-bg: rgba(255, 255, 255, 0.12);
+  --frost-border: rgba(255, 255, 255, 0.28);
+  --frost-glow: rgba(173, 216, 255, 0.6);
+  --success: #6fffb3;
+  --error: #ff6b6b;
+  --warning: #ffe08a;
+  --accent: #6bb8ff;
+  --cool-blue: #9bd3ff;
+  --modern-shadow: 0 0 50px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Manrope", sans-serif;
+
+  background: radial-gradient(circle at top, #06101e, #02060f 70%);
+  min-height: 100vh;
+
+  color: white;
+  background-image: url("api/resource?path=textures/gui/presets/madness.png");
+  background-size: cover;
+  background-position: center;
+  animation: bg-move 25s ease-in-out infinite alternate;
+  display: grid;
+  place-items: center;
+}
+
+@keyframes bg-move {
+  from { background-position: 20% 60%; }
+  to   { background-position: 80% 40%; }
+}
+
+.console-container {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 5px;
+  padding-bottom: 20px;
+  padding-top: 20px;
+ 
+  border-radius: 16px;
+  box-shadow: var(--modern-shadow);
+  width: 100%;
+
+  font-family: monospace;
+  color: #e0e0e0;
+  overflow-x: auto;
+  overflow-y: scroll;
+  max-height: 400px;
+  max-width: 1200px;
+  margin-bottom: 40px;
+}
+
+
+
+.container {
+  max-width: 1500px;
+  width: 95%;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 3rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 25px var(--frost-glow);
+}
+
+.header p {
+  opacity: 0.8;
+  font-size: 1.2rem;
+}
+
+
+/* Frosted Glass Cards */
+.card {
+  background: var(--frost-bg);
+  border: 1px solid var(--frost-border);
+  border-radius: 14px;
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+  padding: 25px;
+  box-shadow: var(--modern-shadow);
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 40px rgba(140, 200, 255, 0.4);
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  margin-bottom: 30px;
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+/* Stats */
+.stat-box {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-box:last-child {
+  border-bottom: none;
+}
+
+.stat-value {
+  color: var(--cool-blue);
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(135, 206, 255, 0.4);
+}
+
+/* Frost Memory Bar */
+.memory-bar {
+  background: rgba(255,255,255,0.07);
+  height: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.memory-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6ee7ff, #79aaff, #9d6bff);
+  transition: width 0.4s;
+}
+
+/* Player List */
+.players-list {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.player-item {
+  background: rgba(255,255,255,0.05);
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+}
+
+/* Logs */
+.logs-container {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.07);
+  border-left: 4px solid var(--accent);
+}
+
+.log-entry.error    { border-left-color: var(--error); }
+.log-entry.success  { border-left-color: var(--success); }
+.log-entry.warning  { border-left-color: var(--warning); }
+
+/* Server Status Box */
+.server-status {
+  padding: 18px;
+  border-radius: 10px;
+  text-align: center;
+  background: rgba(140, 255, 220, 0.15);
+  border: 1px solid rgba(140,255,220,0.4);
+  box-shadow: 0 0 20px rgba(100,255,220,0.2);
+}
+
+.server-status.offline {
+  background: rgba(255, 80, 80, 0.15);
+  border-color: var(--error);
+  box-shadow: 0 0 20px rgba(255,150,150,0.2);
+}
+
+/* Buttons */
+.button {
+  margin-top: 15px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #9bd3ff, #6bb8ff, #4a8fff);
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.4s ease;
+}
+
+.button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px var(--frost-glow);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* Scrollbars — icy edition */
+.players-list::-webkit-scrollbar,
+.logs-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.players-list::-webkit-scrollbar-thumb,
+.logs-container::-webkit-scrollbar-thumb {
+  background: rgba(180, 220, 255, 0.4);
+  border-radius: 4px;
+}
