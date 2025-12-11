@@ -8,6 +8,7 @@ const io = require("socket.io")(http, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
+
 // ... (folders and files objects defined as in your snippet) ...
 const folders = {
   "lib": path.join(__dirname, "lib"),
@@ -19,6 +20,7 @@ const folders = {
   "logs": path.join(__dirname, "logs"),
   "resources": path.join(__dirname, "resources"),
   "bin": path.join(__dirname, "bin"),
+  "plugins": path.join(__dirname, "plugins"),
 };
 
 const files = {
@@ -152,6 +154,8 @@ pause
     const usersRouter = require("./routes/users");
     const worldLib = require("./lib/world");
     const { logMessage, ERROR_CODES, SetSocket, ErrorHandlerSocket } = require("./lib/errorHandler");
+const PluginManager = require("./lib/plugins");
+const { PythonBridge, PythonPluginHelper } = require("./lib/pythonBridge");
 
     console.log("Required all local modules successfully. Server ready to boot.");
     
@@ -185,6 +189,10 @@ const gameState = {
   totalDataSent: 0,
   totalDataReceived: 0,
 };
+
+// Plugin and Python Bridge systems initialization
+let pluginManager = null;
+let pythonBridge = null;
 
 // Mapping from block id to item type name for drops/inventory
 const BLOCK_ID_TO_ITEM = {
@@ -388,6 +396,37 @@ async function initServer() {
     worldGen = new WorldGenerator(gameState.worldSeed);
     chunks = await chunksLib.init({ CHUNKS_DIR, worldGen, gameState });
 
+    // Initialize plugin system
+    logMessage("Initializing plugin system...", "INFO");
+    pluginManager = new PluginManager({
+      pluginsDir: folders.plugins,
+      logger: { 
+        info: (msg) => logMessage(msg, "INFO"),
+        warn: (msg) => logMessage(msg, "WARN"),
+        error: (msg) => logMessage(msg, "ERROR"),
+        debug: (msg) => logMessage(msg, "DEBUG"),
+      },
+      config: {},
+    });
+    
+    // Initialize Python bridge
+    pythonBridge = new PythonBridge({
+      logger: {
+        info: (msg) => logMessage(msg, "INFO"),
+        warn: (msg) => logMessage(msg, "WARN"),
+        error: (msg) => logMessage(msg, "ERROR"),
+        debug: (msg) => logMessage(msg, "DEBUG"),
+      },
+    });
+
+    // Inject dependencies for plugins
+    gameState.pluginManager = pluginManager;
+    gameState.pythonBridge = pythonBridge;
+    gameState.io = io;
+
+    // Load plugins
+    await pluginManager.loadPlugins();
+    await pluginManager.callHook("server:init", { gameState, io });
 
     logMessage("Checking for existing world saves...","INFO");
     chunks.ensureChunksDir();
@@ -503,11 +542,14 @@ async function initServer() {
 
     await Promise.all(spawnChunks);
 
-    http.listen(ServerPort, () => {
+    http.listen(ServerPort, async () => {
       logMessage(`Server Now Running at port ${ServerPort} with protocol 5`,"INFO");
       logMessage(`Admin Dashboard: http://localhost:${ServerPort}/dashboard`, 2);
       logMessage(`Local Game Client: http://localhost:${ServerPort}/game`, 2);
       logMessage(`World Seed: ${gameState.worldSeed}`, 2);
+
+      // Call plugin hook for server start
+      await pluginManager.callHook("server:start", { gameState, io });
     });
   } catch (e) {
     logMessage(
@@ -782,6 +824,13 @@ io.on("connection", (socket) => {
         gameVersion: playerData.GameVersion,
       });
 
+      // Call plugin hook for player join
+      await pluginManager.callHook("player:join", { 
+        player: playerData, 
+        socket,
+        gameState
+      });
+
       // Determine spawn chunk and ensure it's generated/loaded
       const playerChunk = getChunkCoords(playerData.position);
       const cx = playerChunk.x;
@@ -887,7 +936,8 @@ io.on("connection", (socket) => {
       process.on("beforeExit", (code) => {
         socket.emit("serverKick", { reason: "Server Closed" });
       });
-    } catch (err) {
+    }
+    catch (err) {
       logMessage(
         "Unhandled error in playerJoin handler",
         "ERROR",
@@ -1142,8 +1192,12 @@ io.on("connection", (socket) => {
 
       // Consume block
       inv.items[slotIndex].count -= 1;
-      if (inv.items[slotIndex].count <= 0) inv.items.splice(slotIndex,"INFO");
+      if (inv.items[slotIndex].count <= 0) inv.items.splice(slotIndex, 1);
       player.inventory = inv;
+
+      // Call plugin hook for block place
+      const placeContext = { position, blockType: blockId, player, gameState };
+      await pluginManager.callHook("block:place", placeContext);
 
       // Place block
       gameState.chunks[chunkKey].blocks[localPos.x][localPos.y][localPos.z] =
@@ -1212,6 +1266,12 @@ io.on("connection", (socket) => {
       }
 
       if (gameState.chunks[chunkKey]) {
+        const blockType = gameState.chunks[chunkKey].blocks[localPos.x][localPos.y][localPos.z];
+        
+        // Call plugin hook for block break
+        const breakContext = { position, blockType, gameState };
+        await pluginManager.callHook("block:break", breakContext);
+
         gameState.chunks[chunkKey].blocks[localPos.x][localPos.y][localPos.z] =
           0;
         chunks
@@ -1408,6 +1468,14 @@ io.on("connection", (socket) => {
         const clientId = player.clientId;
 
         logMessage(`${username} disconnected`);
+
+        // Call plugin hook for player leave
+        (async () => {
+          await pluginManager.callHook("player:leave", { 
+            player, 
+            gameState
+          });
+        })();
 
         // Persist last seen
         if (clientId) {
